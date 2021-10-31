@@ -1,22 +1,30 @@
 <template>
   <div class="post">
     <div class="post-header">
-      <div class="profile" :style="{ backgroundImage : `url(${data.userImage})` }"></div>
-      <span class="profile-name">{{data.name}}</span>
+      <div class="profile" :style="{ backgroundImage : `url(${게시물.userImage})` }"></div>
+      <span class="profile-name">{{게시물.name}}</span>
     </div>
-    <div class="post-body" :style="{ backgroundImage : `url(${data.postImage})` }"></div>
+    <div :class="게시물.filter" class="post-body" :style="{ backgroundImage : `url(${게시물.postImage})` }"></div>
     <div class="post-content">
-      <p>{{data.likes}} likes</p>
-      <p><strong>{{data.name}}</strong> {{data.content}}</p>
-      <p class="date">{{data.date}}</p>
+      <p>{{ 게시물.likes }} likes</p>
+      <p><strong>{{게시물.name}}</strong> {{게시물.content}}</p>
+      <p class="date">{{게시물.date}}</p>
     </div>
   </div>
 </template>
 
 <script>
 export default {
- props: {
-   data : Object
+  data() {
+    return {
+    }
+  },
+  methods: {
+    
+  },
+  
+  props: {
+   게시물 : Object
  }
 }
 </script>

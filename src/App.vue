@@ -1,29 +1,37 @@
 <template>
   <div class="header">
     <ul class="header-button-left">
-      <li>Cancel</li>
+      <li v-if="step == 1  || step == 2"  @click="step = 0">Cancel</li>
     </ul>
     <ul class="header-button-right">
-      <li>Next</li>
+      <li v-if="step == 1" @click="step++">Next</li>
+      <li v-if="step == 2" @click="publish()">등록</li>
     </ul>
     <img src="./assets/logo.png" alt="" class="logo">
   </div>
 
-  <Container :data="data" :step="step" />
+  <h5>안녕 {{$store.state.name}}</h5>
+  <button @click="$store.commit('이름변경') ">버튼</button>
+  <h5>내 나이는 {{ $store.state.age }}</h5>
+  <button @click="$store.commit('나이변경')">버튼2</button> 
 
-  <button @click="more">더보기</button>
+  <Container :게시물="게시물" :step="step" :이미지="이미지" @write="작성한글 = $event" />
+
+  <div class="buttonArea">
+    <button v-if="step == 0" @click="more">더보기</button>
+  </div>
 
   <div class="footer">
-    <ul class="fotter-button-plus">
-      <input type="file" id="file" class="inputfile" />
-      <label for="file" class="input-plus">+</label>
+    <ul class="footer-button-plus">
+      <input @change="upload" accept="image/*" type="file" id="file" class="inputfile" />
+      <label @click="showStep" for="file" class="input-plus">+</label>
     </ul>
   </div>
 </template>
 
 <script>
 import Container from "./components/Container.vue"
-import data from './assets/data'
+import postData from './assets/data'
 import axios from 'axios'
 
 
@@ -32,22 +40,57 @@ export default {
   data() {
     return {
       step: 0,
-      data,
-      moreNum : 0
+      게시물 : postData,
+      moreNum : 0,
+      이미지 : '',
+      작성한글: '',
+      선택한필터 : ''
     }
+  },
+  mounted() {
+    this.emitter.on('박스클릭함', (a) => {
+      this.선택한필터 = a
+    });
   },
   name: 'App',
   components: {
     Container
   },
   methods: {
+    publish() {
+      var 내게시물 = {
+        name: "Kim Solo",
+        userImage: "https://placeimg.com/100/100/arch",
+        postImage: this.이미지,
+        likes: 36,
+        date: "May 15",
+        liked: false,
+        content: this.작성한글,
+        filter: this.선택한필터
+      };
+      this.게시물.unshift(내게시물)
+      this.step = 0
+      console.log(this.게시물)
+    },
     more() {
       axios.get(`https://codingapple1.github.io/vue/more${this.moreNum}.json`)
         .then((결과)=> {
-          console.log(결과.data.likes);
-          this.data.push(결과.data);
+          console.log(결과.게시물.likes);
+          this.게시물.push(결과.게시물);
           this.moreNum ++;
         })
+    },
+    upload(e) {
+      let 파일 = e.target.files
+      console.log(파일[0])
+      let url = URL.createObjectURL(파일[0])
+      console.log(url)
+      this.이미지 = url
+      this.step++
+    },
+    showStep() {
+
+      console.log(this.step)
     }
   }
 }
@@ -118,7 +161,10 @@ ul {
 }
 input-plus {
   cursor: pointer;
-
+}
+.buttonArea {
+  display: flex;
+  justify-content: center;
 }
 #app {
   box-sizing: border-box;

@@ -1,26 +1,22 @@
 <template>
   <div class="stepView" v-if="step ==0">
-    <Post v-for="(a,i) in data" :key="a" :data="data[i]" />
+    <Post v-for="(a,i) in 게시물" :key="a" :게시물="게시물[i]" />
   </div>
   
 
   <div class="stepView" v-if="step == 1">
     <!-- 필터 선택 페이지 -->
-    <div class="upload-image"></div>
+    <div :class="선택한필터" class="upload-image" :style="`background-image:url(${이미지})`"></div>
     <div class="filters">
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
+      <FilterBox :필터="필터" :이미지="이미지" v-for="필터 in 필터들" :key="필터" > {{필터}}</FilterBox>
     </div>
   </div>
 
   <div class="stepView" v-if="step ==2">
     <!-- 글작성페이지 -->
-    <div class="upload-image"></div>
+    <div :class="선택한필터" class="upload-image" :style="`background-image:url(${이미지})`"></div>
     <div class="write">
-      <textarea class="write-box">write!</textarea>
+      <textarea @input="$emit('write', $event.target.value)" class="write-box" placeholder="write!"></textarea>
     </div>
   </div>
   
@@ -28,13 +24,33 @@
 
 <script>
 import Post from './Post.vue'
+import FilterBox from './FilterBox.vue'
+
 export default {
+  data() {
+    return {
+      필터들: 
+        [ 
+          "aden", "_1977", "brannan", "brooklyn", "clarendon", "earlybird", "gingham", "hudson", 
+          "inkwell", "kelvin", "lark", "lofi", "maven", "mayfair", "moon", "nashville", "perpetua", 
+          "reyes", "rise", "slumber", "stinson", "toaster", "valencia", "walden", "willow", "xpro2",           
+        ],
+      선택한필터 : ''
+    }
+  },
+  mounted() {
+    this.emitter.on('박스클릭함', (a) => {
+      this.선택한필터 = a
+    })
+  },
   components: {
-    Post
+    Post,
+    FilterBox
   },
   props: {
-    data : Array,
-    step : Number
+    게시물 : Array,
+    step : Number,
+    이미지 : String 
   }
 }
 </script>
@@ -44,6 +60,7 @@ export default {
   width: 100%;
   height: 450px;
   background-color: cornflowerblue;
+  opacity: .5;
   background-size: cover;
 }
 .filters{
